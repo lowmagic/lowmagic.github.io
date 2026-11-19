@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lowmagic — local-first AI &amp; diagnostic systems</title>
+  <meta name="description" content="Bounded, local-first AI tools and diagnostic infrastructure in Go and Python by Nathan Curry.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand-lockup" href="https://github.com/lowmagic" aria-label="lowmagic on GitHub">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="assets/lowmagic-lockup-dark.svg">
+          <img src="assets/lowmagic-lockup-light.svg" alt="lowmagic" width="210" height="151">
+        </picture>
+      </a>
+      <p class="lede">
+        Bounded, local-first AI systems and diagnostic tools by <a href="https://nathancurry.com">Nathan Curry</a>, built <a href="https://github.com/lowmagic/.github/blob/main/PRINCIPLES.md">jungle style</a>: use what&rsquo;s already racked.
+      </p>
+      <p class="lede-sub">
+        Models propose; deterministic code checks citations, redacts secrets, enforces budgets, and leaves conclusions to the human operator.
+      </p>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="https://github.com/lowmagic">github.com/lowmagic</a>
+        <a href="https://github.com/lowmagic/.github/blob/main/PRINCIPLES.md">principles</a>
+        <a href="https://github.com/lowmagic/.github/blob/main/code-standards/README.md">code-standards</a>
+        <a href="/chimera-tts/">chimera-tts demo</a>
+        <a href="https://nathancurry.com">nathancurry.com</a>
+        <a href="https://www.linkedin.com/in/nathandcurry">linkedin</a>
+      </nav>
+    </header>
+
+    <section class="section" id="pipeline">
+      <div class="section-head">
+        <div>
+          <span class="section-kicker">01 / Conversation-to-Idea Pipeline</span>
+          <h2>Recorded speech &rarr; attributed transcripts &rarr; cited idea map</h2>
+        </div>
+      </div>
+      <p class="section-desc">
+        Continuous capture and synthesis running across a home NAS and a shared GPU host over Tailscale—scheduled opportunistically without cron delays.
+      </p>
+
+      <div class="pipeline-strip" role="list" aria-label="Pipeline stages">
+        <div class="pipe-step" role="listitem">
+          <span class="step-num">stage 01 &middot; capture</span>
+          <strong>Pendant &amp; Mac audio</strong>
+          <span>Consented BLE pendant &amp; dual-channel macOS capture; raw audio stays on the tailnet.</span>
+        </div>
+        <div class="pipe-step" role="listitem">
+          <span class="step-num">stage 02 &middot; hearsay</span>
+          <strong>Transcribe &amp; attribute</strong>
+          <span>Parakeet ASR + pyannote diarization &rarr; versioned JSONL utterance stream.</span>
+        </div>
+        <div class="pipe-step" role="listitem">
+          <span class="step-num">stage 03 &middot; ideamachine</span>
+          <strong>Segment &amp; extract</strong>
+          <span>Content-addressed <code>uuid5</code> episodes, pseudonymized Claude mining, <code>pgvector</code> links.</span>
+        </div>
+        <div class="pipe-step" role="listitem">
+          <span class="step-num">stage 04 &middot; schema pub</span>
+          <strong>im web &amp; MCP</strong>
+          <span>Read-only Postgres role serving themes, cards, and verbatim transcript spans.</span>
+        </div>
+      </div>
+
+      <article class="spotlight">
+        <div class="spotlight-copy">
+          <div class="proj-header">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="assets/ideamachine-mark-dark.svg">
+              <img src="assets/ideamachine-mark-light.svg" alt="">
+            </picture>
+            <h3 class="proj-title"><a href="https://github.com/lowmagic/ideamachine">ideamachine</a></h3>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Python 3.13</span>
+            <span class="tag">Postgres 16 + pgvector</span>
+            <span class="tag">Claude SDK</span>
+            <span class="tag">sentence-transformers</span>
+          </div>
+          <p>
+            Most recorded speech is small talk. Idea Machine groups Hearsay&rsquo;s utterance stream into content-addressed episodes, extracts ideas, tasks, and decisions with exact line citations, and relates each idea to prior ones across themes.
+          </p>
+          <ul>
+            <li><strong>Deterministic rebuilds:</strong> Every derived row records code, model, and prompt version; human verdicts anchor to transcript segments so they survive re-segmentation.</li>
+            <li><strong>Pseudonymized &amp; budgeted egress:</strong> Speakers map locally to <code>me</code>, <code>S1</code>, <code>S2</code> per request, gated by a pre-flight monthly spend cap.</li>
+            <li><strong>Measured, then simplified:</strong> Cheap triage routers were <a href="https://github.com/lowmagic/ideamachine/blob/main/docs/decisions/0002-first-triage-eval.md">benchmarked against hand labels</a>, then <a href="https://github.com/lowmagic/ideamachine/blob/main/docs/decisions/0014-retire-routing.md">retired</a> once replay data proved routing wasn&rsquo;t earning its keep.</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/ideamachine">source &amp; spec &rarr;</a>
+            <a href="https://github.com/lowmagic/ideamachine/blob/main/docs/decisions/0002-first-triage-eval.md">ADR 0002: triage eval</a>
+            <a href="https://github.com/lowmagic/ideamachine/blob/main/docs/decisions/0014-retire-routing.md">ADR 0014: retire routing</a>
+          </div>
+        </div>
+
+        <div class="ui-preview" aria-label="Idea Machine schema pub card structure">
+          <!-- Replace with <img class="screenshot" src="assets/screenshots/im-web.png" alt="im web interface"> when ready -->
+          <div class="ui-bar">
+            <span>im web &middot; role: pub (read-only)</span>
+            <span>theme / bounded-agents</span>
+          </div>
+          <div class="ui-body">
+            <div class="idea-card">
+              <div class="idea-meta">
+                <span>idea &middot; ep:8f3a1c (uuid5)</span>
+                <span>verdict: kept</span>
+              </div>
+              <div class="idea-claim">Keep diagnostic pacing at one question per turn so the operator owns hypothesis selection.</div>
+              <div class="idea-quote">&ldquo;[me · turn 142] When the tool runs for forty minutes and dumps five pages, nobody reads it on a bridge—ask one check, wait for the output.&rdquo;</div>
+              <div class="idea-edges">linked &rarr; compa: non-diagnosing posture (0.86) &middot; hypertrace: code-owned verdicts (0.79)</div>
+            </div>
+            <div class="idea-card">
+              <div class="idea-meta">
+                <span>decision &middot; ep:41b90e (uuid5)</span>
+                <span>ADR-0014</span>
+              </div>
+              <div class="idea-claim">Retire pre-extraction triage router after replay benchmark showed net negative value vs. direct batching.</div>
+              <div class="idea-quote">&ldquo;[me · turn 038] If the classifier drops even three real ideas to save forty cents a week, the router is the bug.&rdquo;</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="card-grid-2">
+        <article class="card">
+          <div>
+            <div class="proj-header">
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="assets/hearsay-mark-dark.svg">
+                <img src="assets/hearsay-mark-light.svg" alt="">
+              </picture>
+              <h3 class="proj-title"><a href="https://github.com/lowmagic/hearsay">hearsay</a></h3>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">Swift (iOS/macOS)</span>
+              <span class="tag">Parakeet</span>
+              <span class="tag">pyannote</span>
+            </div>
+            <p>Turns consented recordings from a BLE pendant and Mac capture into speaker-attributed transcripts. Raw audio never leaves the tailnet.</p>
+            <p class="worth-look">Precision-first owner voice attribution, deterministic rebuilds from raw uploads, and a versioned <a href="https://github.com/lowmagic/hearsay/blob/main/docs/stream.md">stream contract</a> with deletion propagation.</p>
+          </div>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/hearsay">repo &rarr;</a>
+            <a href="https://github.com/lowmagic/hearsay/blob/main/docs/stream.md">stream.md</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="proj-header">
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="assets/corral-mark-dark.svg">
+                <img src="assets/corral-mark-light.svg" alt="">
+              </picture>
+              <h3 class="proj-title"><a href="https://github.com/lowmagic/corral">corral</a></h3>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">GPU &amp; NAS Scheduling</span>
+            </div>
+            <p>Priority job scheduler for opportunistic local compute across <code>gpu</code> and <code>nas</code> workers—driving Hearsay transcription and Idea Machine runs.</p>
+            <p class="worth-look">Priority aging, burst coalescing (<code>wait_seconds</code>), persistent worker pause, and automatic yield when an interactive process claims the GPU.</p>
+          </div>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/corral">repo &rarr;</a>
+            <a href="https://github.com/lowmagic/corral/blob/main/docs/standards.md">standards.md</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="triage">
+      <div class="section-head">
+        <div>
+          <span class="section-kicker">02 / Support-Case Triage</span>
+          <h2>Evidence-checked investigation over diagnostic archives</h2>
+        </div>
+      </div>
+
+      <article class="spotlight">
+        <div class="spotlight-copy">
+          <div class="proj-header">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="assets/compa-mark-dark.svg">
+              <img src="assets/compa-mark-light.svg" alt="">
+            </picture>
+            <h3 class="proj-title"><a href="https://github.com/lowmagic/compa">compa</a></h3>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Go</span>
+            <span class="tag">Sandboxed Tools</span>
+            <span class="tag">Secret Redaction</span>
+            <span class="tag">Vertex AI / OpenRouter</span>
+          </div>
+          <p>
+            A terminal companion in Go for investigating support cases and unpacked diagnostic bundles. Out of the box it makes zero network calls; when connected to a model, every file read runs through deterministic sandboxed tools and secrets are redacted before leaving the host.
+          </p>
+          <ul>
+            <li><strong><a href="https://github.com/lowmagic/compa-engine">compa-engine</a>:</strong> Go library owning sandboxed collection, cache-friendly conversation ordering, redaction, digest-pinned bundles, and evidence checks.</li>
+            <li><strong><a href="https://github.com/lowmagic/compa-experts">compa-experts</a>:</strong> Embedded domain experts, file-inspection catalogs, and routing rules.</li>
+            <li><strong>Human-owned conclusions:</strong> Compa states what the data shows, what remains open, and what artifact settles it—it never diagnoses or posts to a case.</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/compa">compa &rarr;</a>
+            <a href="https://github.com/lowmagic/compa-engine/blob/main/docs/SPEC.md">engine SPEC.md</a>
+            <a href="https://github.com/lowmagic/compa-engine/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE.md</a>
+          </div>
+        </div>
+
+        <div class="term-box" aria-label="compa terminal workflow">
+          <div class="term-bar">
+            <span>compa &middot; case: 03948120 (sandbox: ro, egress: off)</span>
+            <span>go</span>
+          </div>
+          <div class="term-body"><span class="term-prompt">$</span> compa case open 03948120
+<span class="term-dim">archive: must-gather.local.8412/ (1,418 files indexed, 0 network calls)</span>
+<span class="term-dim">experts: openshift-networking@sha256:9c4e..., etcd-quorum@sha256:31a0...</span>
+
+<span class="term-prompt">case&gt;</span> check ovnkube-node restarts against apiserver TLS errors
+<span class="term-dim">[tool: inspect_pod_logs] redacted 2 bearer tokens, 1 client key</span>
+<span class="term-ok">[verified]</span> 3/3 citations matched byte spans in archive
+
+Observed:
+- ovnkube-node-7xk2p logged x509 expired cert at 14:02:11Z
+  [cite: namespaces/openshift-ovn-kubernetes/.../current.log:418]
+Open:
+- Current signer rotation ConfigMap is absent from this bundle;
+  request openshift-config-managed/kube-apiserver-aggregator-client-ca.</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="section" id="tools">
+      <div class="section-head">
+        <div>
+          <span class="section-kicker">03 / Bounded Research &amp; Local Speech</span>
+          <h2>Smaller harnesses and zero-API audio tools</h2>
+        </div>
+      </div>
+
+      <div class="card-grid-3">
+        <article class="card">
+          <div>
+            <div class="proj-header">
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="assets/hypertrace-mark-dark.svg">
+                <img src="assets/hypertrace-mark-light.svg" alt="">
+              </picture>
+              <h3 class="proj-title"><a href="https://github.com/lowmagic/hypertrace">hypertrace</a></h3>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">SQLite</span>
+            </div>
+            <p>Bounded web-research harness where an LLM proposes searches, but code decides what qualifies as evidence.</p>
+            <p class="worth-look">Verbatim byte-offset quote checks in article bodies, adversarial review, per-attempt cost accounting, and code-written <code>"Inconclusive"</code> verdicts.</p>
+          </div>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/hypertrace">repo &rarr;</a>
+            <a href="https://github.com/lowmagic/hypertrace/blob/main/docs/sample-report.md">sample report</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="proj-header">
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="assets/backtalk-mark-dark.svg">
+                <img src="assets/backtalk-mark-light.svg" alt="">
+              </picture>
+              <h3 class="proj-title"><a href="https://github.com/lowmagic/backtalk">backtalk</a></h3>
+            </div>
+            <div class="tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">Parakeet ONNX</span>
+              <span class="tag">Silero VAD</span>
+            </div>
+            <p>Local GPU speech server for real-time voice chat over Tailscale speaking the OpenAI Realtime protocol.</p>
+            <p class="worth-look">Read-back-only server that refuses ungrounded replies, cancels cleanly on barge-in, shares the GPU with <code>corral</code>, and voices via <code>chimera-tts</code>.</p>
+          </div>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/backtalk">repo &rarr;</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div>
+            <div class="proj-header">
+              <picture>
+                <source media="(prefers-color-scheme: dark)" srcset="assets/chimera-tts-mark-dark.svg">
+                <img src="assets/chimera-tts-mark-light.svg" alt="">
+              </picture>
+              <h3 class="proj-title"><a href="https://github.com/lowmagic/chimera-tts">chimera-tts</a></h3>
+            </div>
+            <div class="tag-row">
+              <span class="tag">TypeScript</span>
+              <span class="tag">Vocal-Tract Synth</span>
+            </div>
+            <p>Text-to-speech voice and browser chat built on a physical vocal-tract synthesizer rather than neural TTS.</p>
+            <p class="worth-look">Pitch and rhythm learned from speech recordings over an unpatched synth, Markdown-to-speech normalizer, zero GPU or API key.</p>
+          </div>
+          <div class="card-links">
+            <a class="btn-link" href="/chimera-tts/">live demo &rarr;</a>
+            <a href="https://github.com/lowmagic/chimera-tts">repo &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <span>Go &middot; Python &middot; Postgres + pgvector &middot; SQLite &middot; Parakeet ONNX &middot; TypeScript &middot; Swift &middot; Podman &middot; Ansible &middot; Tailscale</span>
+      <span><a href="https://nathancurry.com">Nathan Curry</a> &middot; <a href="https://github.com/lowmagic">@lowmagic</a></span>
+    </footer>
+  </div>
+</body>
+</html>
