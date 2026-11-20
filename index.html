@@ -233,6 +233,50 @@ Open:
   request openshift-config-managed/kube-apiserver-aggregator-client-ca.</div>
         </div>
       </article>
+
+      <article class="spotlight">
+        <div class="spotlight-copy">
+          <div class="proj-header">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="assets/prometheus-tsdb-reader-mark-dark.svg">
+              <img src="assets/prometheus-tsdb-reader-mark-light.svg" alt="">
+            </picture>
+            <h3 class="proj-title"><a href="https://github.com/lowmagic/prometheus-tsdb-reader">prometheus-tsdb-reader</a></h3>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Go</span>
+            <span class="tag">CGO_ENABLED=0</span>
+            <span class="tag">PromQL &amp; TSDB/WAL</span>
+          </div>
+          <p>
+            One static binary and Go library that opens a captured Prometheus TSDB archive offline and answers PromQL the way Prometheus does—without touching the dump or requiring a running cluster.
+          </p>
+          <ul>
+            <li><strong>Salvages damaged dumps:</strong> Skips corrupt blocks with explicit gap reporting and replays partial WAL segments up to the first torn record rather than discarding the head.</li>
+            <li><strong>Safe for sandboxed callers:</strong> Replays WAL chunks under <code>--scratch</code> so read-only mounts stay untouched, bounds series and sample counts, and exposes typed named queries so automated callers never build raw PromQL strings.</li>
+            <li><strong>Explains silence &amp; step aliasing:</strong> Distinguishes four empty-result causes and warns when query steps hide peaks.</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/prometheus-tsdb-reader">repo &rarr;</a>
+            <a href="https://github.com/lowmagic/prometheus-tsdb-reader/blob/main/docs/SPEC.md">SPEC.md</a>
+            <a href="https://github.com/lowmagic/prometheus-tsdb-reader/blob/main/docs/stack.md">stack.md</a>
+          </div>
+        </div>
+
+        <div class="term-box" aria-label="prometheus-tsdb-reader terminal workflow">
+          <div class="term-bar">
+            <span>prometheus-tsdb-reader &middot; dump.tar.gz (ro)</span>
+            <span>promql</span>
+          </div>
+          <div class="term-body"><span class="term-prompt">$</span> prometheus-tsdb-reader --dump ./dump.tar.gz --scratch /tmp/work \
+    named node-disk-write-latency --instance worker-1:9100 --start 4h --window 5m
+<span class="term-dim">{"type":"summary","dump_start":"2026-11-19T08:00:00Z","dump_end":"2026-11-19T14:16:00Z",
+ "gaps":[{"block":"01KBC9...","reason":"corrupt index; skipped"}],
+ "warnings":["wal truncated at segment 00000004: newest 12s missing"]}</span>
+<span class="term-ok">{"series":{"device":"nvme0n1","instance":"worker-1:9100"},"metric":"write_latency",</span>
+ "peak":0.0492,"unit":"seconds","samples":382}</div>
+        </div>
+      </article>
     </section>
 
     <section class="section" id="tools">
