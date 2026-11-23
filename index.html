@@ -44,10 +44,115 @@
       </nav>
     </header>
 
+    <section class="section" id="triage">
+      <div class="section-head">
+        <div>
+          <span class="section-kicker">01 / Support-Case Triage</span>
+          <h2>Evidence-checked investigation over diagnostic archives</h2>
+        </div>
+      </div>
+
+      <article class="spotlight">
+        <div class="spotlight-copy">
+          <div class="proj-header">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="assets/compa-mark-dark.svg">
+              <img src="assets/compa-mark-light.svg" alt="">
+            </picture>
+            <h3 class="proj-title"><a href="https://github.com/lowmagic/compa">compa</a></h3>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Go</span>
+            <span class="tag">Sandboxed Tools</span>
+            <span class="tag">Secret Redaction</span>
+            <span class="tag">ZDR / Enterprise Models</span>
+          </div>
+          <p>
+            A terminal companion in Go for investigating support cases and unpacked diagnostic bundles. Built to work with smaller, enterprise-hosted, and zero-data-retention (ZDR) models: out of the box it makes zero network calls; when connected to a model, every file read runs through deterministic sandboxed tools and secrets are redacted before leaving the host.
+          </p>
+          <ul>
+            <li><strong><a href="https://github.com/lowmagic/compa-engine">compa-engine</a>:</strong> Go library owning sandboxed collection, cache-friendly conversation ordering, redaction, digest-pinned bundles, and evidence checks.</li>
+            <li><strong><a href="https://github.com/lowmagic/compa-experts">compa-experts</a>:</strong> Embedded domain experts, file-inspection catalogs, and deterministic routing rules verified against upstream source code and docs.</li>
+            <li><strong>Human-owned conclusions:</strong> Compa states what the data shows, what remains open, and what artifact settles it—it never diagnoses or posts to a case.</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/compa">compa &rarr;</a>
+            <a href="https://github.com/lowmagic/compa-engine/blob/main/docs/SPEC.md">engine SPEC.md</a>
+            <a href="https://github.com/lowmagic/compa-engine/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE.md</a>
+          </div>
+        </div>
+
+        <div class="term-box" aria-label="compa terminal workflow">
+          <div class="term-bar">
+            <span>compa &middot; case: 03948120 (sandbox: ro, egress: off)</span>
+            <span>go</span>
+          </div>
+          <div class="term-body"><span class="term-prompt">$</span> compa case open 03948120
+<span class="term-dim">archive: must-gather.local.8412/ (1,418 files indexed, 0 network calls)</span>
+<span class="term-dim">experts: openshift-networking@sha256:9c4e..., etcd-quorum@sha256:31a0...</span>
+
+<span class="term-prompt">case&gt;</span> check ovnkube-node restarts against apiserver TLS errors
+<span class="term-dim">[tool: inspect_pod_logs] redacted 2 bearer tokens, 1 client key</span>
+<span class="term-ok">[verified]</span> 3/3 citations matched byte spans in archive
+
+Observed:
+- ovnkube-node-7xk2p logged x509 expired cert at 14:02:11Z
+  [cite: namespaces/openshift-ovn-kubernetes/.../current.log:418]
+Open:
+- Current signer rotation ConfigMap is absent from this bundle;
+  request openshift-config-managed/kube-apiserver-aggregator-client-ca.</div>
+        </div>
+      </article>
+
+      <article class="spotlight">
+        <div class="spotlight-copy">
+          <div class="proj-header">
+            <picture>
+              <source media="(prefers-color-scheme: dark)" srcset="assets/prometheus-tsdb-reader-mark-dark.svg">
+              <img src="assets/prometheus-tsdb-reader-mark-light.svg" alt="">
+            </picture>
+            <h3 class="proj-title"><a href="https://github.com/lowmagic/prometheus-tsdb-reader">prometheus-tsdb-reader</a></h3>
+          </div>
+          <div class="tag-row">
+            <span class="tag">Go</span>
+            <span class="tag">Static Binary</span>
+            <span class="tag">PromQL &amp; TSDB/WAL</span>
+          </div>
+          <p>
+            One static binary and Go library that opens a captured Prometheus TSDB archive offline and answers PromQL the way Prometheus does—without touching the dump or requiring a running cluster.
+          </p>
+          <ul>
+            <li><strong>Salvages damaged dumps:</strong> Skips corrupt blocks with explicit gap reporting and replays partial WAL segments up to the first torn record rather than discarding the head.</li>
+            <li><strong>Safe for sandboxed callers:</strong> Replays WAL chunks under <code>--scratch</code> so read-only mounts stay untouched, bounds series and sample counts, and exposes typed named queries so automated callers never build raw PromQL strings.</li>
+            <li><strong>Explains silence &amp; step aliasing:</strong> Distinguishes four empty-result causes and warns when query steps hide peaks.</li>
+          </ul>
+          <div class="card-links">
+            <a href="https://github.com/lowmagic/prometheus-tsdb-reader">repo &rarr;</a>
+            <a href="https://github.com/lowmagic/prometheus-tsdb-reader/blob/main/docs/SPEC.md">SPEC.md</a>
+            <a href="https://github.com/lowmagic/prometheus-tsdb-reader/blob/main/docs/stack.md">stack.md</a>
+          </div>
+        </div>
+
+        <div class="term-box" aria-label="prometheus-tsdb-reader terminal workflow">
+          <div class="term-bar">
+            <span>prometheus-tsdb-reader &middot; dump.tar.gz (ro)</span>
+            <span>promql</span>
+          </div>
+          <div class="term-body"><span class="term-prompt">$</span> prometheus-tsdb-reader --dump ./dump.tar.gz --scratch /tmp/work \
+    named node-disk-write-latency --instance worker-1:9100 --start 4h --window 5m
+<span class="term-dim">{"type":"summary","dump_start":"2026-11-19T08:00:00Z","dump_end":"2026-11-19T14:16:00Z",
+ "gaps":[{"block":"01KBC9...","reason":"corrupt index; skipped"}],
+ "warnings":["wal truncated at segment 00000004: newest 12s missing"]}</span>
+<span class="term-ok">{"series":{"device":"nvme0n1","instance":"worker-1:9100"},"metric":"write_latency",</span>
+ "peak":0.0492,"unit":"seconds","samples":382}</div>
+        </div>
+      </article>
+    </section>
+
     <section class="section" id="pipeline">
       <div class="section-head">
         <div>
-          <span class="section-kicker">01 / Conversation-to-Idea Pipeline</span>
+          <span class="section-kicker">02 / Conversation-to-Idea Pipeline</span>
           <h2>Recorded speech &rarr; attributed transcripts &rarr; cited idea map</h2>
         </div>
       </div>
@@ -172,9 +277,9 @@
             </div>
             <div class="tag-row">
               <span class="tag">Python</span>
-              <span class="tag">GPU &amp; NAS Scheduling</span>
+              <span class="tag">GPU &amp; CPU Scheduling</span>
             </div>
-            <p>Priority job scheduler for opportunistic local compute across <code>gpu</code> and <code>nas</code> workers—driving Hearsay transcription and Idea Machine runs.</p>
+            <p>Priority job scheduler for opportunistic local compute across <code>gpu</code> and <code>cpu</code> workers—driving Hearsay transcription and Idea Machine runs.</p>
             <p class="worth-look">Priority aging, burst coalescing (<code>wait_seconds</code>), persistent worker pause, and automatic yield when an interactive process claims the GPU.</p>
           </div>
           <div class="card-links">
@@ -183,111 +288,6 @@
           </div>
         </article>
       </div>
-    </section>
-
-    <section class="section" id="triage">
-      <div class="section-head">
-        <div>
-          <span class="section-kicker">02 / Support-Case Triage</span>
-          <h2>Evidence-checked investigation over diagnostic archives</h2>
-        </div>
-      </div>
-
-      <article class="spotlight">
-        <div class="spotlight-copy">
-          <div class="proj-header">
-            <picture>
-              <source media="(prefers-color-scheme: dark)" srcset="assets/compa-mark-dark.svg">
-              <img src="assets/compa-mark-light.svg" alt="">
-            </picture>
-            <h3 class="proj-title"><a href="https://github.com/lowmagic/compa">compa</a></h3>
-          </div>
-          <div class="tag-row">
-            <span class="tag">Go</span>
-            <span class="tag">Sandboxed Tools</span>
-            <span class="tag">Secret Redaction</span>
-            <span class="tag">Vertex AI / OpenRouter</span>
-          </div>
-          <p>
-            A terminal companion in Go for investigating support cases and unpacked diagnostic bundles. Out of the box it makes zero network calls; when connected to a model, every file read runs through deterministic sandboxed tools and secrets are redacted before leaving the host.
-          </p>
-          <ul>
-            <li><strong><a href="https://github.com/lowmagic/compa-engine">compa-engine</a>:</strong> Go library owning sandboxed collection, cache-friendly conversation ordering, redaction, digest-pinned bundles, and evidence checks.</li>
-            <li><strong><a href="https://github.com/lowmagic/compa-experts">compa-experts</a>:</strong> Embedded domain experts, file-inspection catalogs, and routing rules.</li>
-            <li><strong>Human-owned conclusions:</strong> Compa states what the data shows, what remains open, and what artifact settles it—it never diagnoses or posts to a case.</li>
-          </ul>
-          <div class="card-links">
-            <a href="https://github.com/lowmagic/compa">compa &rarr;</a>
-            <a href="https://github.com/lowmagic/compa-engine/blob/main/docs/SPEC.md">engine SPEC.md</a>
-            <a href="https://github.com/lowmagic/compa-engine/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE.md</a>
-          </div>
-        </div>
-
-        <div class="term-box" aria-label="compa terminal workflow">
-          <div class="term-bar">
-            <span>compa &middot; case: 03948120 (sandbox: ro, egress: off)</span>
-            <span>go</span>
-          </div>
-          <div class="term-body"><span class="term-prompt">$</span> compa case open 03948120
-<span class="term-dim">archive: must-gather.local.8412/ (1,418 files indexed, 0 network calls)</span>
-<span class="term-dim">experts: openshift-networking@sha256:9c4e..., etcd-quorum@sha256:31a0...</span>
-
-<span class="term-prompt">case&gt;</span> check ovnkube-node restarts against apiserver TLS errors
-<span class="term-dim">[tool: inspect_pod_logs] redacted 2 bearer tokens, 1 client key</span>
-<span class="term-ok">[verified]</span> 3/3 citations matched byte spans in archive
-
-Observed:
-- ovnkube-node-7xk2p logged x509 expired cert at 14:02:11Z
-  [cite: namespaces/openshift-ovn-kubernetes/.../current.log:418]
-Open:
-- Current signer rotation ConfigMap is absent from this bundle;
-  request openshift-config-managed/kube-apiserver-aggregator-client-ca.</div>
-        </div>
-      </article>
-
-      <article class="spotlight">
-        <div class="spotlight-copy">
-          <div class="proj-header">
-            <picture>
-              <source media="(prefers-color-scheme: dark)" srcset="assets/prometheus-tsdb-reader-mark-dark.svg">
-              <img src="assets/prometheus-tsdb-reader-mark-light.svg" alt="">
-            </picture>
-            <h3 class="proj-title"><a href="https://github.com/lowmagic/prometheus-tsdb-reader">prometheus-tsdb-reader</a></h3>
-          </div>
-          <div class="tag-row">
-            <span class="tag">Go</span>
-            <span class="tag">CGO_ENABLED=0</span>
-            <span class="tag">PromQL &amp; TSDB/WAL</span>
-          </div>
-          <p>
-            One static binary and Go library that opens a captured Prometheus TSDB archive offline and answers PromQL the way Prometheus does—without touching the dump or requiring a running cluster.
-          </p>
-          <ul>
-            <li><strong>Salvages damaged dumps:</strong> Skips corrupt blocks with explicit gap reporting and replays partial WAL segments up to the first torn record rather than discarding the head.</li>
-            <li><strong>Safe for sandboxed callers:</strong> Replays WAL chunks under <code>--scratch</code> so read-only mounts stay untouched, bounds series and sample counts, and exposes typed named queries so automated callers never build raw PromQL strings.</li>
-            <li><strong>Explains silence &amp; step aliasing:</strong> Distinguishes four empty-result causes and warns when query steps hide peaks.</li>
-          </ul>
-          <div class="card-links">
-            <a href="https://github.com/lowmagic/prometheus-tsdb-reader">repo &rarr;</a>
-            <a href="https://github.com/lowmagic/prometheus-tsdb-reader/blob/main/docs/SPEC.md">SPEC.md</a>
-            <a href="https://github.com/lowmagic/prometheus-tsdb-reader/blob/main/docs/stack.md">stack.md</a>
-          </div>
-        </div>
-
-        <div class="term-box" aria-label="prometheus-tsdb-reader terminal workflow">
-          <div class="term-bar">
-            <span>prometheus-tsdb-reader &middot; dump.tar.gz (ro)</span>
-            <span>promql</span>
-          </div>
-          <div class="term-body"><span class="term-prompt">$</span> prometheus-tsdb-reader --dump ./dump.tar.gz --scratch /tmp/work \
-    named node-disk-write-latency --instance worker-1:9100 --start 4h --window 5m
-<span class="term-dim">{"type":"summary","dump_start":"2026-11-19T08:00:00Z","dump_end":"2026-11-19T14:16:00Z",
- "gaps":[{"block":"01KBC9...","reason":"corrupt index; skipped"}],
- "warnings":["wal truncated at segment 00000004: newest 12s missing"]}</span>
-<span class="term-ok">{"series":{"device":"nvme0n1","instance":"worker-1:9100"},"metric":"write_latency",</span>
- "peak":0.0492,"unit":"seconds","samples":382}</div>
-        </div>
-      </article>
     </section>
 
     <section class="section" id="tools">
